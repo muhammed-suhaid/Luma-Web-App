@@ -4,7 +4,6 @@ const cors = require("cors")
 const userModel = require("./models/user_model")
 const bcrypt = require("bcryptjs")
 const { mongoUrl } = require("./config")
-const profileModel = require("./models/profile_model")
 
 const app = express()
 
@@ -16,10 +15,24 @@ mongoose.connect(mongoUrl)
 // ******************** Register ******************** //
 app.post("/register", async (request, response) => {
     // Getting data from user
-    const getFirstName = request.body.firstName
-    const getLastName = request.body.lastName
+    const getName = request.body.name
     const getEmail = request.body.emailAddress
     const getPassword = request.body.password
+    const getAge = request.body.age;
+    const getGender = request.body.gender;
+    const getPhoto = request.body.photo;
+    const getLocation = request.body.location;
+    const getPhone = request.body.phone;
+    const getinstagramLink = request.body.instagramLink;
+    const getBio = request.body.bio;
+    const getInterests = request.body.interests;
+    const getInterestedIn = request.body.interestedIn;
+    const getRelationshipStatus = request.body.relationshipStatus;
+    const getLookingFor = request.body.lookingFor;
+    const getEducation = request.body.education;
+    const getProfession = request.body.profession;
+    const getLanguages = request.body.languages;
+    const getHobbies = request.body.hobbies;
 
     //  Check if email already exists
     const existingUser = await userModel.findOne({ emailAddress: getEmail })
@@ -36,10 +49,24 @@ app.post("/register", async (request, response) => {
     // Storing data to mongodb
     let data_store = new userModel(
         {
-            firstName: getFirstName,
-            lastName: getLastName,
+            name: getName,
             emailAddress: getEmail,
             password: hashedPassword,
+            age: getAge,
+            gender: getGender,
+            photo: getPhoto,
+            location: getLocation,
+            phone: getPhone,
+            instagramLink: getinstagramLink,
+            bio: getBio,
+            interests: getInterests,
+            interestedIn: getInterestedIn,
+            relationshipStatus: getRelationshipStatus,
+            lookingFor: getLookingFor,
+            education: getEducation,
+            profession: getProfession,
+            languages: getLanguages,
+            hobbies: getHobbies,
         }
     )
     const savedUser = await data_store.save()
@@ -50,9 +77,23 @@ app.post("/register", async (request, response) => {
             status: "Successfully Registered",
             result: {
                 userId: savedUser._id,
-                firstName: getFirstName,
-                lastName: getLastName,
+                name: getName,
                 emailAddress: getEmail,
+                age: getAge,
+                gender: getGender,
+                photo: getPhoto,
+                location: getLocation,
+                phone: getPhone,
+                instagramLink: getinstagramLink,
+                bio: getBio,
+                interests: getInterests,
+                interestedIn: getInterestedIn,
+                relationshipStatus: getRelationshipStatus,
+                lookingFor: getLookingFor,
+                education: getEducation,
+                profession: getProfession,
+                languages: getLanguages,
+                hobbies: getHobbies,
             }
         }
     )
@@ -95,76 +136,6 @@ app.post("/login", async (request, response) => {
     )
 })
 
-// ******************** Complete Profile ******************** //
-app.post("/complete-profile", async (request, response) => {
-    // Getting data from user
-    const getUserId = request.body.userId;
-    const getAge = request.body.age;
-    const getGender = request.body.gender;
-    const getPhoto = request.body.photo;
-    const getLocation = request.body.location;
-    const getPhone = request.body.phone;
-    const getinstagramLink = request.body.instagramLink;
-    const getBio = request.body.bio;
-    const getInterests = request.body.interests;
-    const getInterestedIn = request.body.interestedIn;
-    const getHeight = request.body.height;
-    const getWeight = request.body.weight;
-    const getRelationshipStatus = request.body.relationshipStatus;
-    const getLookingFor = request.body.lookingFor;
-    const getEducation = request.body.education;
-    const getProfession = request.body.profession;
-    const getLanguages = request.body.languages;
-    const getHobbies = request.body.hobbies;
-
-    try {
-        // Check if a profile already exists for this user
-        const existingProfile = await profileModel.findOne({ userId: getUserId });
-        if (existingProfile) {
-            return response.status(400).json({
-                status: "Failed",
-                message: "Profile already exists for this user",
-            });
-        }
-
-        // Save to database
-        const data_store = new profileModel({
-            userId: getUserId,
-            age: getAge,
-            gender: getGender,
-            photo: getPhoto,
-            location: getLocation,
-            phone: getPhone,
-            instagramLink: getinstagramLink,
-            bio: getBio,
-            interests: getInterests,
-            interestedIn: getInterestedIn,
-            height: getHeight,
-            weight: getWeight,
-            relationshipStatus: getRelationshipStatus,
-            lookingFor: getLookingFor,
-            education: getEducation,
-            profession: getProfession,
-            languages: getLanguages,
-            hobbies: getHobbies,
-        });
-
-        const savedProfile = await data_store.save();
-
-        // Return response
-        response.json({
-            status: "Profile Created Successfully",
-            result: savedProfile,
-        });
-    } catch (error) {
-        response.status(500).json({
-            status: "Error",
-            message: "Something went wrong",
-            error: error.message,
-        });
-    }
-})
-
 // ******************** Update Profile ******************** //
 app.put("/update-profile", (request, response) => {
     response.json(
@@ -178,8 +149,7 @@ app.put("/update-profile", (request, response) => {
 app.post("/view-profile", async (request, response) => {
     const userId = request.body.userId
 
-    const profile = await profileModel.findOne({ userId })
-        .populate("userId", "firstName lastName emailAddress")
+    const profile = await userModel.findById(userId)
 
     if (!profile) {
         return response.status(404).json({
@@ -187,39 +157,11 @@ app.post("/view-profile", async (request, response) => {
             message: "Profile not found"
         })
     }
-    const profileObj = profile.toObject();
-
-    const result = {
-        firstName: profileObj.userId.firstName,
-        lastName: profileObj.userId.lastName,
-        emailAddress: profileObj.userId.emailAddress,
-        userId: profileObj.userId._id,
-        _id: profileObj._id,
-        age: profileObj.age,
-        gender: profileObj.gender,
-        photo: profileObj.photo,
-        location: profileObj.location,
-        phone: profileObj.phone,
-        instagramLink: profileObj.instagramLink,
-        bio: profileObj.bio,
-        interests: profileObj.interests,
-        interestedIn: profileObj.interestedIn,
-        height: profileObj.height,
-        weight: profileObj.weight,
-        relationshipStatus: profileObj.relationshipStatus,
-        lookingFor: profileObj.lookingFor,
-        education: profileObj.education,
-        profession: profileObj.profession,
-        languages: profileObj.languages,
-        hobbies: profileObj.hobbies,
-        createdAt: profileObj.createdAt,
-        updatedAt: profileObj.updatedAt
-    };
 
     response.json(
         {
             status: "Profile Viewed Successfully",
-            data: result
+            data: profile
         }
     )
 })
@@ -227,43 +169,12 @@ app.post("/view-profile", async (request, response) => {
 // ******************** View All Profile ******************** //
 app.post("/users", async (request, response) => {
     try {
-        const allProfiles = await profileModel.find()
-            .populate("userId", "firstName lastName emailAddress")
-
-        const result = allProfiles.map(profile => {
-            const profileObj = profile.toObject()
-            return {
-                userId: profileObj.userId._id,
-                _id: profileObj._id,
-                firstName: profileObj.userId.firstName,
-                lastName: profileObj.userId.lastName,
-                emailAddress: profileObj.userId.emailAddress,
-                age: profileObj.age,
-                gender: profileObj.gender,
-                photo: profileObj.photo,
-                location: profileObj.location,
-                phone: profileObj.phone,
-                instagramLink: profileObj.instagramLink,
-                bio: profileObj.bio,
-                interests: profileObj.interests,
-                interestedIn: profileObj.interestedIn,
-                height: profileObj.height,
-                weight: profileObj.weight,
-                relationshipStatus: profileObj.relationshipStatus,
-                lookingFor: profileObj.lookingFor,
-                education: profileObj.education,
-                profession: profileObj.profession,
-                languages: profileObj.languages,
-                hobbies: profileObj.hobbies,
-                createdAt: profileObj.createdAt,
-                updatedAt: profileObj.updatedAt,
-            }
-        })
+        const allProfiles = await userModel.find()
 
         response.json({
             status: "Successfully Fetched All Users",
-            count: result.length,
-            data: result
+            count: allProfiles.length,
+            data: allProfiles
         })
 
     } catch (error) {
@@ -281,7 +192,7 @@ app.post("/users/exclude", async (request, response) => {
         const currentUserId = request.body.userId
 
         // Get current user profile
-        const currentUserProfile = await profileModel.findOne({ userId: currentUserId })
+        const currentUserProfile = await userModel.findById(currentUserId)
         if (!currentUserProfile) {
             return response.status(404).json({ message: "Profile not found" })
         }
@@ -294,47 +205,16 @@ app.post("/users/exclude", async (request, response) => {
             : { gender: targetGender }
 
         // Find matching profiles excluding the current user's profile
-        const matchingProfiles = await profileModel.find({
-            userId: { $ne: currentUserId },
-            ...genderFilter
-        }).populate("userId", "firstName lastName emailAddress")
-
-        // Returning Response
-        const result = matchingProfiles.map(profile => {
-            const profileObj = profile.toObject()
-            return {
-                userId: profileObj.userId._id,
-                _id: profileObj._id,
-                firstName: profileObj.userId.firstName,
-                lastName: profileObj.userId.lastName,
-                emailAddress: profileObj.userId.emailAddress,
-                age: profileObj.age,
-                gender: profileObj.gender,
-                photo: profileObj.photo,
-                location: profileObj.location,
-                phone: profileObj.phone,
-                instagramLink: profileObj.instagramLink,
-                bio: profileObj.bio,
-                interests: profileObj.interests,
-                interestedIn: profileObj.interestedIn,
-                height: profileObj.height,
-                weight: profileObj.weight,
-                relationshipStatus: profileObj.relationshipStatus,
-                lookingFor: profileObj.lookingFor,
-                education: profileObj.education,
-                profession: profileObj.profession,
-                languages: profileObj.languages,
-                hobbies: profileObj.hobbies,
-                createdAt: profileObj.createdAt,
-                updatedAt: profileObj.updatedAt,
-            }
-        })
+        const matchingProfiles = await userModel.find({
+            _id: { $ne: currentUserId },
+            ...genderFilter,
+        });
 
         // Send response
         response.json({
-            status: "Successfully Fetched All Users",
-            count: result.length,
-            data: result,
+            status: "Successfully Fetched All Users Excluding current user",
+            count: matchingProfiles.length,
+            data: matchingProfiles,
         })
     } catch (error) {
         response.status(500).json({

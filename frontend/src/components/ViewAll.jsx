@@ -23,6 +23,18 @@ const ViewAll = () => {
             })
     }
 
+
+    // converting image url
+    const convertDriveLink = (originalLink) => {
+        console.log("Original Link:", originalLink);
+
+        const match = originalLink?.match(/\/d\/(.+?)\//);
+        const newLink = match ? `http://drive.google.com/uc?export=view&id=${match[1]}` : originalLink;
+
+        console.log("Converted Link:", newLink);
+        return newLink;
+    };
+
     // calling fetchdata when reloading
     useEffect(() => { fetchProfiles() }, [])
 
@@ -49,8 +61,8 @@ const ViewAll = () => {
                                 {/*Image */}
                                 <div className="col col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 d-flex justify-content-center align-items-center">
                                     <img
-                                        // src={currentProfile.photo}
-                                        src='https://i.pinimg.com/736x/97/00/19/9700195ee1212e3be61c0294fdc80a0a.jpg'
+                                        // src={convertDriveLink(currentProfile.photo)}
+                                        src="https://drive.google.com/uc?export=view&id=1rfQbMNXQmat38U3fGS7agIkMEghdWH5s"
                                         alt="Profile"
                                         className="img-fluid rounded shadow"
                                         style={{ maxHeight: '500px', objectFit: 'cover' }}
@@ -59,7 +71,7 @@ const ViewAll = () => {
 
                                 {/* Profiles Details */}
                                 <div className="col col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 pt-4">
-                                    <h4>{currentProfile.firstName}</h4>
+                                    <h4>{currentProfile.name}</h4>
                                     <p>{currentProfile.bio}</p>
                                     <p>
                                         {currentProfile.age}
@@ -76,7 +88,8 @@ const ViewAll = () => {
                                         >
                                             <i className="bi bi-instagram me-2"></i>Instagram
                                         </a>
-                                    </p>                                    <p><strong>Looking For : </strong> {currentProfile.lookingFor}</p>
+                                    </p>
+                                    <p><strong>Looking For : </strong> {currentProfile.lookingFor}</p>
                                     <p>{currentProfile.location}</p>
                                     <p><strong>Education : </strong> {currentProfile.education}</p>
                                     <p><strong>Profession : </strong> {currentProfile.profession}</p>
