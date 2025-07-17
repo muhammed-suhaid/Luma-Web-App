@@ -29,14 +29,14 @@ const ViewAll = () => {
     // Going to next Profile by index
     const nextProfile = () => {
         if (currentIndex < profiles.length - 1) {
-            setCurrentIndex(currentIndex + 1);
+            setCurrentIndex(currentIndex + 1)
         } else {
-            alert("No more profiles!");
+            alert("No more profiles!")
         }
     };
 
     // Showing current profile
-    const currentProfile = profiles[currentIndex];
+    const currentProfile = profiles[currentIndex]
 
     return (
         <div>
