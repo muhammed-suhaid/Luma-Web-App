@@ -1,6 +1,7 @@
 const express = require("express")
 const mongoose = require("mongoose")
 const cors = require("cors")
+const userModel = require("./models/user_model")
 
 const app = express()
 
@@ -10,9 +11,22 @@ app.use(express.urlencoded({ extended: true }))
 
 // *************** Register *************** //
 app.post("/register", (request, response) => {
+    // Getting data from user
+    const getFirstName = request.body.firstName
+    const getLastName = request.body.lastName
+    const getEmail = request.body.emailAddress
+    const getPassword = request.body.password
+
+    // Passing response 
     response.json(
         {
-            "status": "Successfully Registered"
+            status: "Successfully Registered",
+            result: {
+                firstName: getFirstName,
+                lastName: getLastName,
+                emailAddress: getEmail,
+                password: getPassword,
+            }
         }
     )
 })
