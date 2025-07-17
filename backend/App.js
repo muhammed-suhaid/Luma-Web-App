@@ -21,16 +21,16 @@ app.post("/register", async (request, response) => {
     const getPassword = request.body.password
 
     //  Check if email already exists
-    const existingUser = await userModel.findOne({ emailAddress: getEmail });
+    const existingUser = await userModel.findOne({ emailAddress: getEmail })
     if (existingUser) {
         return response.status(400).json({
             status: "Failed",
             message: "Email already registered",
-        });
+        })
     }
 
     // Hash the password
-    const hashedPassword = await bcrypt.hash(getPassword, 10);
+    const hashedPassword = await bcrypt.hash(getPassword, 10)
 
     // Storing data to mongodb
     let data_store = new userModel(
@@ -58,10 +58,38 @@ app.post("/register", async (request, response) => {
 })
 
 // *************** Login *************** //
-app.post("/login", (request, response) => {
+app.post("/login", async (request, response) => {
+    // Getting data from user
+    const getEmail = request.body.emailAddress
+    const getpassword = request.body.password
+
+    // Checking EmailAddress exists
+    const user = await userModel.findOne({ emailAddress: getEmail })
+    if (!user) {
+        return response.status(400).json({
+            status: "Failed",
+            message: "User not found"
+        })
+    }
+    // Checking Password is same
+    const isMatch = await bcrypt.compare(getpassword, user.password);
+    if (!isMatch) {
+        return response.status(400).json({
+            status: "Failed",
+            message: "Incorrect password"
+        })
+    }
+
+    // Passing response 
     response.json(
         {
-            "status": "Successfully Logined"
+            status: "Successfully Logged In",
+            result: {
+                userId: user._id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                emailAddress: user.emailAddress,
+            }
         }
     )
 })
