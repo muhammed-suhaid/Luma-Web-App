@@ -184,12 +184,53 @@ app.post("/view-profile", (request, response) => {
 })
 
 // ******************** View All Profile ******************** //
-app.post("/users", (request, response) => {
-    response.json(
-        {
-            "status": "Successfully Fetched All Users"
-        }
-    )
+app.post("/users", async (request, response) => {
+    try {
+        const allProfiles = await profileModel.find()
+            .populate("userId", "firstName lastName emailAddress");
+
+        const result = allProfiles.map(profile => {
+            const profileObj = profile.toObject();
+            return {
+                userId: profileObj.userId._id,
+                _id: profileObj._id,
+                firstName: profileObj.userId.firstName,
+                lastName: profileObj.userId.lastName,
+                emailAddress: profileObj.userId.emailAddress,
+                age: profileObj.age,
+                gender: profileObj.gender,
+                photo: profileObj.photo,
+                location: profileObj.location,
+                phone: profileObj.phone,
+                instagramLink: profileObj.instagramLink,
+                bio: profileObj.bio,
+                interests: profileObj.interests,
+                interestedIn: profileObj.interestedIn,
+                height: profileObj.height,
+                weight: profileObj.weight,
+                relationshipStatus: profileObj.relationshipStatus,
+                lookingFor: profileObj.lookingFor,
+                education: profileObj.education,
+                profession: profileObj.profession,
+                languages: profileObj.languages,
+                hobbies: profileObj.hobbies,
+                createdAt: profileObj.createdAt,
+                updatedAt: profileObj.updatedAt,
+            };
+        });
+
+        response.json({
+            status: "Successfully Fetched All Users",
+            count: result.length,
+            data: result
+        });
+
+    } catch (error) {
+        response.status(500).json({
+            status: "error",
+            message: error.message
+        });
+    }
 })
 
 // ******************** View All Profile Excluding Logged in Profile ******************** //
