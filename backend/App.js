@@ -4,6 +4,7 @@ const cors = require("cors")
 const userModel = require("./models/user_model")
 const bcrypt = require("bcryptjs")
 const { mongoUrl } = require("./config")
+const profileModel = require("./models/profile_model")
 
 const app = express()
 
@@ -12,7 +13,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 mongoose.connect(mongoUrl)
 
-// *************** Register *************** //
+// ******************** Register ******************** //
 app.post("/register", async (request, response) => {
     // Getting data from user
     const getFirstName = request.body.firstName
@@ -57,7 +58,7 @@ app.post("/register", async (request, response) => {
     )
 })
 
-// *************** Login *************** //
+// ******************** Login ******************** //
 app.post("/login", async (request, response) => {
     // Getting data from user
     const getEmail = request.body.emailAddress
@@ -94,7 +95,77 @@ app.post("/login", async (request, response) => {
     )
 })
 
-// *************** Update Profile *************** //
+// ******************** Complete Profile ******************** //
+app.post("/complete-profile", async (request, response) => {
+    // Getting data from user
+    const getUserId = request.body.userId;
+    const getAge = request.body.age;
+    const getGender = request.body.gender;
+    const getPhoto = request.body.photo;
+    const getLocation = request.body.location;
+    const getPhone = request.body.phone;
+    const getinstagramLink = request.body.instagramLink;
+    const getBio = request.body.bio;
+    const getInterests = request.body.interests;
+    const getInterestedIn = request.body.interestedIn;
+    const getHeight = request.body.height;
+    const getWeight = request.body.weight;
+    const getRelationshipStatus = request.body.relationshipStatus;
+    const getLookingFor = request.body.lookingFor;
+    const getEducation = request.body.education;
+    const getProfession = request.body.profession;
+    const getLanguages = request.body.languages;
+    const getHobbies = request.body.hobbies;
+
+    try {
+        // Check if a profile already exists for this user
+        const existingProfile = await profileModel.findOne({ userId: getUserId });
+        if (existingProfile) {
+            return response.status(400).json({
+                status: "Failed",
+                message: "Profile already exists for this user",
+            });
+        }
+
+        // Save to database
+        const data_store = new profileModel({
+            userId: getUserId,
+            age: getAge,
+            gender: getGender,
+            photo: getPhoto,
+            location: getLocation,
+            phone: getPhone,
+            instagramLink: getinstagramLink,
+            bio: getBio,
+            interests: getInterests,
+            interestedIn: getInterestedIn,
+            height: getHeight,
+            weight: getWeight,
+            relationshipStatus: getRelationshipStatus,
+            lookingFor: getLookingFor,
+            education: getEducation,
+            profession: getProfession,
+            languages: getLanguages,
+            hobbies: getHobbies,
+        });
+
+        const savedProfile = await data_store.save();
+
+        // Return response
+        response.json({
+            status: "Profile Created Successfully",
+            result: savedProfile,
+        });
+    } catch (error) {
+        response.status(500).json({
+            status: "Error",
+            message: "Something went wrong",
+            error: error.message,
+        });
+    }
+})
+
+// ******************** Update Profile ******************** //
 app.put("/update-profile", (request, response) => {
     response.json(
         {
@@ -103,7 +174,7 @@ app.put("/update-profile", (request, response) => {
     )
 })
 
-// *************** Get Profile *************** //
+// ******************** Get Profile ******************** //
 app.post("/view-profile", (request, response) => {
     response.json(
         {
@@ -112,7 +183,7 @@ app.post("/view-profile", (request, response) => {
     )
 })
 
-// *************** View All Profile *************** //
+// ******************** View All Profile ******************** //
 app.post("/users", (request, response) => {
     response.json(
         {
