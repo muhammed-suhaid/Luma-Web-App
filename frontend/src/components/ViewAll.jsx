@@ -1,6 +1,20 @@
 import React, { useEffect, useState } from 'react'
 import NavBar from './NavBar'
 import axios from 'axios'
+import img1 from '../assets/images/suhaid.jpg';
+import img2 from '../assets/images/navaneeth.jpg';
+import img3 from '../assets/images/anand.jpg';
+import img4 from '../assets/images/wizz.jpg';
+import img5 from '../assets/images/nevin.jpg';
+import img6 from '../assets/images/meghana.jpg';
+import img7 from '../assets/images/binu.jpg';
+import img8 from '../assets/images/akshay.jpg';
+import img9 from '../assets/images/sana.jpg';
+import img10 from '../assets/images/akshaya.jpg';
+import img11 from '../assets/images/yaser.jpg';
+import img12 from '../assets/images/gautham.jpg';
+import img13 from '../assets/images/abhinand.jpg';
+
 
 const ViewAll = () => {
     // variables
@@ -22,6 +36,10 @@ const ViewAll = () => {
                 console.log("Error fetching profiles", error)
             })
     }
+
+    const localImages = [
+        img1, img2, img3, img4, img5, img6, img7, img8, img9, img10, img11, img12,img13
+    ];
 
 
     // converting image url
@@ -61,8 +79,8 @@ const ViewAll = () => {
                                 {/*Image */}
                                 <div className="col col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 d-flex justify-content-center align-items-center">
                                     <img
-                                        // src={convertDriveLink(currentProfile.photo)}
-                                        src="https://drive.google.com/uc?export=view&id=1rfQbMNXQmat38U3fGS7agIkMEghdWH5s"
+                                        src={localImages[currentIndex % localImages.length]}
+                                        // src="https://drive.google.com/uc?export=view&id=1rfQbMNXQmat38U3fGS7agIkMEghdWH5s"
                                         alt="Profile"
                                         className="img-fluid rounded shadow"
                                         style={{ maxHeight: '500px', objectFit: 'cover' }}
@@ -90,6 +108,7 @@ const ViewAll = () => {
                                         </a>
                                     </p>
                                     <p><strong>Looking For : </strong> {currentProfile.lookingFor}</p>
+                                    <p><strong>Interested In : </strong> {currentProfile.interestedIn}</p>
                                     <p>{currentProfile.location}</p>
                                     <p><strong>Education : </strong> {currentProfile.education}</p>
                                     <p><strong>Profession : </strong> {currentProfile.profession}</p>

@@ -201,14 +201,15 @@ app.post("/users/exclude", async (request, response) => {
 
         // Build gender filter
         const genderFilter = targetGender === "Everyone"
-            ? {} // no gender filter, include all
-            : { gender: targetGender }
+            ? {}
+            : { gender: { $regex: `^${targetGender}$`, $options: "i" } }
+
 
         // Find matching profiles excluding the current user's profile
         const matchingProfiles = await userModel.find({
             _id: { $ne: currentUserId },
             ...genderFilter,
-        });
+        })
 
         // Send response
         response.json({
